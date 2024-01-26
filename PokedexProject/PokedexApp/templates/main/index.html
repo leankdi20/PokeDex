@@ -1,0 +1,172 @@
+{% extends 'layout/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+    <!--  load static es necesario para cargar las imagenes, css y JS -->
+{% load static %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" crossorigin="anonymous"/>
+    <link rel="icon" href="{% static 'img/pokeball-icon.ico' %}">
+    <title>Pokedex | Django</title>
+    <link  href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
+    
+    <script src="{% static 'js/scripts.js' %}"></script>
+
+    
+</head>
+<body>
+    
+
+
+     <div class="imgPoke">
+        <img src="{% static 'img/Titulo.png' %}" alt="Pokémon" style="width: 500px; height: auto;"> 
+     </div>
+    
+
+    <h2>POKEDEX </h2>
+        <div class="cont-pokedex">
+            
+            <form method="post" class="form" onsubmit="return validateAndSubmitForm()">
+                <!-- Proteccion anti falsificaciones-->
+                {% csrf_token %}
+                
+                <!-- Barra de busqueda de pokedex -->
+                <input type="text" id="inputField" name="pokemon" placeholder="   Search Your Pokemon..." >
+                <button type="submit" id="btn" onmousedown="playSound()"><i class="fa-solid fa-magnifying-glass"></i></button>
+
+                <audio id="clickSound" src="{% static 'sound/click_button.mp3' %}"></audio>
+                
+            </form>
+
+            <button id="btn-dex" onmousedown="playSound_dex()" style="font-size: 16px; color: azure;">Información</button>
+            <audio id="clickSound-dex" src="{% static 'sound/pokedex.mp3' %}"></audio>
+            
+            
+            <a href="{% url 'pokemonList' %}">Lista de Pokémon</a>
+            
+
+            <div class="img-result">
+                {% if number and name %}
+                     <img src="{{sprite}}" alt="{{name}} sprite" style="width: 150px; height: auto;">
+                     <p style="color: azure;">{{ name }}</p>
+                {% endif %}
+            </div>
+           
+          
+           
+        </div>
+
+        <div class="container-index">
+            <div id="card">
+                {% if number and name %}
+                <p class="hp"> 
+                    <span>HP</span>
+                    {{ number }}
+                </p>
+                <img src="{{sprite}}" alt="{{name}} sprite" >
+                
+                <h2 class="poke-name">Sample Name</h2>
+                <p style="font-size: 25px;">{{name}}</p>
+                
+                <div class="types">
+                    <span>type 1</span>
+                    <span>type 2</span>
+                    <span>type 3</span>
+                    
+                </div>
+                <div class="stats">
+                    <div>
+                        <h4>{{ type }}</h4>
+                        <p>Type</p>
+                    </div>
+                    <div>
+                        <h4>{{ height }}</h4>
+                        <p>Height</p>
+                    </div>
+                    <div>
+                        <h4>{{ weight }}</h4>
+                        <p>Weight</p>
+                    </div>
+                    
+                </div>
+
+                {% else %}
+            </div>
+
+        </div>
+          
+         
+        <div>
+            <h3>
+                Escribe el nombre o ID de tu pokemon.
+            </h3>
+        </div>
+
+        
+{% endif %}
+        
+        
+        <script>
+              // Función para verificar si el número es mayor a 50 y mostrar una alerta
+            
+            function checkNumber() {
+                var numberInput = document.getElementsByName("pokemon")[0].value;
+                var parsedNumber = parseInt(numberInput);
+                if (parsedNumber > 50) {
+                    alert("Se permite la busqueda a este Pokémon, pero por favor, \n buscar Pokémon con su id menor a 50.");
+                }
+            }
+
+            // Agrega el evento onsubmit al formulario para llamar a la función de verificación
+            document.getElementsByTagName("form")[0].onsubmit = function () {
+                checkNumber();
+            };
+
+            /*Estas dos funciones son para activar los sonidos de dos botones,
+                tanto btn=Informacion y btn=Busqueda que tiene imagen de lupa 
+            */
+            function playSound() {
+            var sound = document.getElementById('clickSound');
+            sound.currentTime = 1; 
+            sound.play();
+            sound.addEventListener('ended', function() {
+                sound.currentTime = 5.999;
+              });
+            }
+
+            function playSound_dex() {
+                var sound = document.getElementById('clickSound-dex');
+                sound.currentTime = 1; 
+                sound.play();
+                sound.addEventListener('ended', function() {
+                    sound.currentTime = 5.999;
+             });
+             }
+
+
+             /*Esta función no permite que se generen espacios. si el usuario genera algun espacio 
+             le sale un alerta para que ingrese un elemento valido*/
+             function validateAndSubmitForm() {
+                var userInput = document.getElementById('inputField').value;
+                var trimmedValue = userInput.trim();
+                if (trimmedValue === "") {
+                    alert("Por favor, ingrese un valor válido.");
+                    return false;
+                }
+                document.getElementById('inputField').value = trimmedValue;
+                return true;
+            }
+            document.getElementById('inputField').addEventListener('input', function() {
+                validateAndSubmitForm();
+            });
+
+
+        </script>
+        
+{% endblock %}
+</body>
+</html>
